@@ -20,4 +20,4 @@ commit-message-strategy:
     Patch:
       - '^feat:'
       - '^fix:'
-      - '.*'  # fallback: qualquer commit que não casar com os padrões acima
+      - '.*'

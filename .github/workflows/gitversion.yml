@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  versioning:
     runs-on: ubuntu-latest
     steps:
       - name: Install GitVersion
@@ -24,7 +24,7 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.2.1
         with:
-          useConfigFile: true
+          useConfigFile: true  # usa GitVersion.yml na raiz
 
       - name: Create Git Tag
         run: |
