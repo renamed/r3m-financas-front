@@ -2,9 +2,9 @@ assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
 tag-prefix: '[vV]?'
 version-in-branch-pattern: (?<version>[vV]?\d+(\.\d+)?(\.\d+)?).*
-major-version-bump-message: ^(feat!|fix!|major):
-minor-version-bump-message: ^feat:
-patch-version-bump-message: ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):
+major-version-bump-message: '^(feat!|fix!|major):'
+minor-version-bump-message: '^feat:'
+patch-version-bump-message: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):'
 no-bump-message: \+semver:\s?(none|skip)
 tag-pre-release-weight: 60000
 commit-date-format: yyyy-MM-dd
