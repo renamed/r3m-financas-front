@@ -12,8 +12,7 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.2.1
         with:
-          versionSpec: '6.3.x'
-          preferLatestVersion: true
+          versionSpec: '6.0.0'
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +23,7 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.2.1
         with:
-          useConfigFile: true  # usa GitVersion.yml na raiz
+          useConfigFile: true
 
       - name: Create Git Tag
         run: |
