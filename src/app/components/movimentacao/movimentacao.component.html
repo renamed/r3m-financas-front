@@ -1,0 +1,92 @@
+<h1>Movimentações</h1>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8">
+      <h2>Filtros</h2>
+      <form>
+        <div class="form-group">
+          <label for="data">Data</label>
+          <input type="date" id="data" name="data" class="form-control" (change)="onDataChange($event)"
+            [(ngModel)]="movimentacao.data" />
+        </div>
+        <div class="form-group">
+          <label for="descricao">Descrição</label>
+          <input type="input" id="descricao" name="descricao" class="form-control"
+            [(ngModel)]="movimentacao.descricao" />
+        </div>
+        <div class="form-group">
+          <label for="periodo">Período</label>
+          <div class="d-flex align-items-center gap-2">
+          <select id="periodo" class="form-control" name="periodo" [(ngModel)]="movimentacao.periodoId">
+            <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">{{ periodo.nome }}</option>
+          </select>
+          <button type="button" class="btn btn-secondary ms-2" (click)="ListarPeriodosAsync()">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="categoria">Categoria</label>
+          <div class="d-flex align-items-center gap-2">
+            <select id="categoria" class="form-control" name="categoria" [(ngModel)]="movimentacao.categoriaId">
+              <option *ngFor="let categoria of categorias" [value]="categoria.categoriaId">{{ categoria.nome }}</option>
+            </select>
+            <button type="button" class="btn btn-secondary ms-2" (click)="ListarCategorias()">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="instituicao">Instituição</label>
+          <div class="d-flex align-items-center gap-2">
+          <select id="instituicao" class="form-control" name="instituicao" [(ngModel)]="movimentacao.instituicaoId">
+            <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">{{ instituicao.nome }}
+            </option>
+          </select>
+          <button type="button" class="btn btn-secondary ms-2" (click)="ListarInstituicoesAsync()">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="valor">Valor</label>
+          <!-- <input type="number" id="valor" name="valor" step=".01" class="form-control"
+            placeholder="Valor da movimentação" [(ngModel)]="movimentacao.valor" /> -->
+            <input type="text" id="valor" name="valor" class="form-control"
+       placeholder="Valor da movimentação"
+       [value]="movimentacao.valor | currency:'BRL':'symbol':'1.2-2'"
+       (input)="onValorInput($event)" />
+        </div>
+        <div class="row mt-2 text-end">
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()">Adicionar Movimentação</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-4">
+      @for (instituicao of instituicoes; track $index) {
+      <div class="row">
+        <div class="col-md-12">
+          <h3>{{ instituicao.nome }}</h3>
+          <p>Saldo: {{ instituicao.saldo | currency:'BRL' }}</p>
+          @if (!instituicao.movimentacoes || instituicao.movimentacoes.length === 0) {
+            <b>Instituição não possui movimentações</b>
+          } @else {
+          <div id="mov-ins-{{ instituicao.instituicaoId }}">
+            @for (movimentacao of instituicao.movimentacoes; track $index) {
+            <div class="row">
+              <div class="col-3">{{ movimentacao.data | date:'shortDate' }}</div>
+              <div class="col-6">{{ movimentacao.descricao }} </div>
+              <div class="col-3">{{ movimentacao.valor | currency: 'BRL' }} </div>
+            </div>
+            }
+            <hr />
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
