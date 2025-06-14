@@ -1,0 +1,23 @@
+mode: Mainline
+branches:
+  main:
+    regex: ^main$
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: true
+    is-mainline: true
+    source-branches: []
+    label: ''
+commit-message-incrementing: Enabled
+commit-message-strategy:
+  merge-message-strategy: Disabled
+  incrementing:
+    Major:
+      - '^feat!!:'
+      - '^fix!!:'
+    Minor:
+      - '^feat!:'
+      - '^fix!:'
+    Patch:
+      - '^feat:'
+      - '^fix:'
+      - '.*'  # fallback: qualquer commit que não casar com os padrões acima
