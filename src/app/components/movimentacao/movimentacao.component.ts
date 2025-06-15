@@ -10,10 +10,12 @@ import { FormsModule } from '@angular/forms';
 import MovimentacaoResponse from '../../models/movimentacao.response';
 import { MovimentacaoService } from '../../services/movimentacao.service';
 import { MovimentacaoRequest } from '../../models/movimentacao.request';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-movimentacao',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SweetAlert2Module],
   templateUrl: './movimentacao.component.html',
   styleUrl: './movimentacao.component.css'
 })
@@ -21,16 +23,32 @@ export class MovimentacaoComponent {
   async onSubmit() {
     try {
       await this.movimentacaoService.AdicionarAsync(this.movimentacao);
-      await this.ListarInstituicoesAsync();      
-    } catch (error) {
-      alert(error)
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao adicionar movimentação',
+        html: 'Não foi possível adicionar a movimentação. <p/> ' + error.message,
+        allowOutsideClick: false
+      });
+      return;
     }
-    
+
+    try {
+      await this.ListarInstituicoesAsync();
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Erro ao listar instituições!',
+        html: `Não é possível listar o saldo e novas movimentações das instituições. Entretanto, a movimentação foi adicionada com sucesso. <p/> ${error.message}`,
+        allowOutsideClick: false
+      });
+    }
   }
+
   periodoSelecionado: PeriodoResponse | null = null;
   categoriaSelecionada: CategoryResponse | null = null;
-  instituicaoSelecionada: InstituicaoResponse | null = null;  
-  movimentacao : MovimentacaoRequest = {
+  instituicaoSelecionada: InstituicaoResponse | null = null;
+  movimentacao: MovimentacaoRequest = {
     data: new Date(),
     descricao: '',
     valor: 0,
@@ -59,11 +77,16 @@ export class MovimentacaoComponent {
 
   async ListarCategorias() {
     try {
-      const categorias_aux = await this.categoryService.ListarAsync();      
+      const categorias_aux = await this.categoryService.ListarAsync();
       categorias_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.categorias = categorias_aux;
-    } catch (error) {
-      console.error('Erro ao listar categorias:', error);
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao carregar categorias',
+        html: 'Não foi possível carregar as categorias. <p/> ' + error.message,
+        allowOutsideClick: false
+      });
     }
   }
 
@@ -73,26 +96,36 @@ export class MovimentacaoComponent {
       const periodos_aux = await this.periodosService.ListarAsync(year);
       periodos_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.periodos = periodos_aux;
-    } catch (error) {
-      console.error('Erro ao listar períodos:', error);
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao carregar períodos',
+        html: 'Não foi possível carregar os períodos. <p/> ' + error.message,
+        allowOutsideClick: false
+      });
     }
   }
 
   async ListarInstituicoesAsync() {
     try {
       const instituicoes_aux = await this.instituicoesService.ListarAsync();
-      for(const inst of instituicoes_aux) {
+      for (const inst of instituicoes_aux) {
         inst.movimentacoes = await this.ListarUltimasMovimentacoesPorInstituicaoAsync(inst.instituicaoId);
       }
 
       instituicoes_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.instituicoes = instituicoes_aux;
-    } catch (error) {
-      console.error('Erro ao listar instituições:', error);
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao listar instituições',
+        html: 'Não foi possível listar as instituições. <p/> ' + error.message,
+        allowOutsideClick: false
+      });
     }
   }
 
-  async ListarUltimasMovimentacoesPorInstituicaoAsync(instituicaoId: string) : Promise<MovimentacaoResponse[]> {
+  async ListarUltimasMovimentacoesPorInstituicaoAsync(instituicaoId: string): Promise<MovimentacaoResponse[]> {
     const movimentacoes = await this.movimentacaoService.ListarPorInstituicaoAsync(instituicaoId);
 
     movimentacoes.sort((a, b) => {
@@ -114,9 +147,9 @@ export class MovimentacaoComponent {
 
   onDataChange($event: Event) {
     if (this.periodos.length > 0) {
-      const dataInput = $event.target as HTMLInputElement;      
+      const dataInput = $event.target as HTMLInputElement;
       const selectedDate = new Date(dataInput.value);
-      this.periodos.forEach(periodo => {                
+      this.periodos.forEach(periodo => {
         const aposInicio = selectedDate >= new Date(periodo.inicio);
         const antesFim = selectedDate <= new Date(periodo.fim);
         if (aposInicio && antesFim) {
@@ -126,28 +159,28 @@ export class MovimentacaoComponent {
     }
   }
 
-onValorInput(event: any) {
-  let value = event.target.value;
+  onValorInput(event: any) {
+    let value = event.target.value;
 
-  // Verifica se possui o caractere "-"
-  const isNegative = value.trim().includes('-');
+    // Verifica se possui o caractere "-"
+    const isNegative = value.trim().includes('-');
 
-  // Remove tudo que não for dígito
-  value = value.replace(/[^\d]/g, '');
+    // Remove tudo que não for dígito
+    value = value.replace(/[^\d]/g, '');
 
-  if (value.length === 0) value = '0';
+    if (value.length === 0) value = '0';
 
-  // Converte para float (centavos)
-  let floatValue = parseFloat((parseInt(value, 10) / 100).toFixed(2));
-  if (isNegative) floatValue = -floatValue;
+    // Converte para float (centavos)
+    let floatValue = parseFloat((parseInt(value, 10) / 100).toFixed(2));
+    if (isNegative) floatValue = -floatValue;
 
-  // Atualiza o modelo
-  this.movimentacao.valor = floatValue;
+    // Atualiza o modelo
+    this.movimentacao.valor = floatValue;
 
-  // Atualiza o input formatado
-  const formatted = floatValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  event.target.value = formatted;
-}
+    // Atualiza o input formatado
+    const formatted = floatValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    event.target.value = formatted;
+  }
 
 
 }
