@@ -13,13 +13,18 @@ import { MovimentacaoRequest } from '../../models/movimentacao.request';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faRefresh  } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-movimentacao',
-  imports: [CommonModule, FormsModule, SweetAlert2Module],
+  imports: [CommonModule, FormsModule, SweetAlert2Module, FontAwesomeModule],
   templateUrl: './movimentacao.component.html',
   styleUrl: './movimentacao.component.css'
 })
-export class MovimentacaoComponent {
+export class MovimentacaoComponent {  
+  faRefresh = faRefresh;
+
   async onSubmit() {
     try {
       await this.movimentacaoService.AdicionarAsync(this.movimentacao);

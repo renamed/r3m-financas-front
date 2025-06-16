@@ -22,7 +22,7 @@
             <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">{{ periodo.nome }}</option>
           </select>
           <button type="button" class="btn btn-secondary ms-2" (click)="ListarPeriodosAsync()">
-              <i class="fa fa-refresh"></i>
+              <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
         </div>
@@ -33,7 +33,7 @@
               <option *ngFor="let categoria of categorias" [value]="categoria.categoriaId">{{ categoria.nome }}</option>
             </select>
             <button type="button" class="btn btn-secondary ms-2" (click)="ListarCategorias()">
-              <i class="fa fa-refresh"></i>
+               <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
         </div>
@@ -45,7 +45,7 @@
             </option>
           </select>
           <button type="button" class="btn btn-secondary ms-2" (click)="ListarInstituicoesAsync()">
-              <i class="fa fa-refresh"></i>
+              <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
         </div>
@@ -60,7 +60,7 @@
         </div>
         <div class="row mt-2 text-end">
           <div class="col-md-12">
-            <button type="submit" class="btn btn-primary" (click)="onSubmit()">Adicionar Movimentação</button>
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()"> Adicionar Movimentação</button>
           </div>
         </div>
       </form>
