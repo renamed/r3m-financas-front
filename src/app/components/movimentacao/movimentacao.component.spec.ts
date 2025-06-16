@@ -10,6 +10,7 @@ import CategoryResponse from '../../models/categoria.response';
 import PeriodoResponse from '../../models/periodo.response';
 import InstituicaoResponse from '../../models/instituicao.response';
 import MovimentacaoResponse from '../../models/movimentacao.response';
+import Swal from 'sweetalert2';
 
 // Mocks com tipos corretos
 const mockCategorias: CategoryResponse[] = [
@@ -91,21 +92,21 @@ describe('MovimentacaoComponent', () => {
 
   it('should handle error in ListarCategorias', async () => {
     categoriasService.ListarAsync.and.returnValue(Promise.reject('erro'));
-    const spy = spyOn(console, 'error');
+    const spy = spyOn<any>(Swal, 'fire');
     await component.ListarCategorias();
     expect(spy).toHaveBeenCalled();
   });
 
   it('should handle error in ListarPeriodosAsync', async () => {
     periodosService.ListarAsync.and.returnValue(Promise.reject('erro'));
-    const spy = spyOn(console, 'error');
+    const spy = spyOn<any>(Swal, 'fire');
     await component.ListarPeriodosAsync();
     expect(spy).toHaveBeenCalled();
   });
 
   it('should handle error in ListarInstituicoesAsync', async () => {
     instituicoesService.ListarAsync.and.returnValue(Promise.reject('erro'));
-    const spy = spyOn(console, 'error');
+    const spy = spyOn<any>(Swal, 'fire');
     await component.ListarInstituicoesAsync();
     expect(spy).toHaveBeenCalled();
   });
@@ -149,9 +150,9 @@ describe('MovimentacaoComponent', () => {
   });
 
   it('should call onSubmit and handle error', async () => {
-    movimentacaoService.AdicionarAsync.and.returnValue(Promise.reject('erro'));
-    spyOn(window, 'alert');
+    movimentacaoService.AdicionarAsync.and.returnValue(Promise.reject({ message: 'erro' }));
+    const spy = spyOn<any>(Swal, 'fire');
     await component.onSubmit();
-    expect(window.alert).toHaveBeenCalledWith('erro');
+    expect(spy).toHaveBeenCalled();
   });
 });
