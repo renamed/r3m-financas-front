@@ -51,8 +51,6 @@
         </div>
         <div class="form-group">
           <label for="valor">Valor</label>
-          <!-- <input type="number" id="valor" name="valor" step=".01" class="form-control"
-            placeholder="Valor da movimentação" [(ngModel)]="movimentacao.valor" /> -->
             <input type="text" id="valor" name="valor" class="form-control"
        placeholder="Valor da movimentação"
        [value]="movimentacao.valor | currency:'BRL':'symbol':'1.2-2'"
@@ -75,6 +73,10 @@
             <b>Instituição não possui movimentações</b>
           } @else {
           <div id="mov-ins-{{ instituicao.instituicaoId }}">
+            <b>
+                Últimas Movimentações </b>
+                <fa-icon style="cursor: pointer;" [icon]="faCopy" (click)="copiarMovimentacoes(instituicao.instituicaoId)"></fa-icon> 
+            
             @for (movimentacao of instituicao.movimentacoes; track $index) {
             <div class="row">
               <div class="col-3">{{ movimentacao.data | date:'shortDate' }}</div>

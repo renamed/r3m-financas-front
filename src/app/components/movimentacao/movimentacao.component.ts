@@ -14,7 +14,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRefresh  } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faCopy  } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-movimentacao',
@@ -22,33 +22,13 @@ import { faRefresh  } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './movimentacao.component.html',
   styleUrl: './movimentacao.component.css'
 })
-export class MovimentacaoComponent {  
+export class MovimentacaoComponent {
+  categorias: CategoryResponse[] = [];
+  periodos: PeriodoResponse[] = [];
+  instituicoes: InstituicaoResponse[] = [];
+  
   faRefresh = faRefresh;
-
-  async onSubmit() {
-    try {
-      await this.movimentacaoService.AdicionarAsync(this.movimentacao);
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erro ao adicionar movimentação',
-        html: 'Não foi possível adicionar a movimentação. <p/> ' + error.message,
-        allowOutsideClick: false
-      });
-      return;
-    }
-
-    try {
-      await this.ListarInstituicoesAsync();
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Erro ao listar instituições!',
-        html: `Não é possível listar o saldo e novas movimentações das instituições. Entretanto, a movimentação foi adicionada com sucesso. <p/> ${error.message}`,
-        allowOutsideClick: false
-      });
-    }
-  }
+  faCopy = faCopy;
 
   periodoSelecionado: PeriodoResponse | null = null;
   categoriaSelecionada: CategoryResponse | null = null;
@@ -61,10 +41,6 @@ export class MovimentacaoComponent {
     instituicaoId: '',
     periodoId: ''
   };
-
-  categorias: CategoryResponse[] = [];
-  periodos: PeriodoResponse[] = [];
-  instituicoes: InstituicaoResponse[] = [];
 
   constructor(private categoryService: CategoriasService
     , private periodosService: PeriodosService
@@ -187,5 +163,55 @@ export class MovimentacaoComponent {
     event.target.value = formatted;
   }
 
+  async onSubmit() {
+    try {
+      await this.movimentacaoService.AdicionarAsync(this.movimentacao);
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao adicionar movimentação',
+        html: 'Não foi possível adicionar a movimentação. <p/> ' + error.message,
+        allowOutsideClick: false
+      });
+      return;
+    }
+
+    try {
+      await this.ListarInstituicoesAsync();
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Erro ao listar instituições!',
+        html: `Não é possível listar o saldo e novas movimentações das instituições. Entretanto, a movimentação foi adicionada com sucesso. <p/> ${error.message}`,
+        allowOutsideClick: false
+      });
+    }
+  }
+
+  copiarMovimentacoes(id_instituicao: string) {
+    const instituicao = this.instituicoes.find(i => i.instituicaoId === id_instituicao);
+    const movimentacoes = instituicao?.movimentacoes || [];
+    const csv = movimentacoes.map(m => {
+      const dataFormatada = m.data;
+      const valorFormatado = m.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      return `${dataFormatada};${dataFormatada};${m.descricao};;${valorFormatado};${valorFormatado}`;
+    }).join('\n');
+
+    navigator.clipboard.writeText(csv).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Movimentações copiadas',
+        text: 'As movimentações foram copiadas para a área de transferência.',
+        allowOutsideClick: false
+      });
+    }).catch((error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao copiar movimentações',
+        html: `Não foi possível copiar as movimentações. <p/> ${error.message}`,
+        allowOutsideClick: false
+      });
+    });
+  }  
 
 }

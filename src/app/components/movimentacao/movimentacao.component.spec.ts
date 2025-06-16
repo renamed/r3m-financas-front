@@ -155,4 +155,78 @@ describe('MovimentacaoComponent', () => {
     await component.onSubmit();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should call copiarMovimentacoes and copy to clipboard (success)', async () => {
+    const instituicao = { ...mockInstituicoes[0], movimentacoes: [...mockMovimentacoes] };
+    component.instituicoes = [instituicao];
+    const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
+    const swalSpy = spyOn<any>(Swal, 'fire');
+    await component.copiarMovimentacoes(instituicao.instituicaoId);
+    expect(clipboardSpy).toHaveBeenCalled();
+    expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+  });
+
+  it('should call copiarMovimentacoes and handle clipboard error', async () => {
+    const instituicao = { ...mockInstituicoes[0], movimentacoes: [...mockMovimentacoes] };
+    component.instituicoes = [instituicao];
+    const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.reject({ message: 'erro' }));
+    const swalSpy = spyOn<any>(Swal, 'fire').and.callThrough();
+    // Precisa aguardar o catch da promise
+    await component.copiarMovimentacoes(instituicao.instituicaoId);
+    // Aguarda o event loop para garantir que o catch foi executado
+    await new Promise(res => setTimeout(res));
+    expect(clipboardSpy).toHaveBeenCalled();
+    expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'error' }));
+  });
+
+  it('should not fail copiarMovimentacoes if instituicao not found', async () => {
+    component.instituicoes = [];
+    const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
+    const swalSpy = spyOn<any>(Swal, 'fire');
+    await component.copiarMovimentacoes('nao-existe');
+    // clipboard.writeText deve ser chamado com string vazia
+    expect(clipboardSpy).toHaveBeenCalledWith('');
+    expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+  });
+
+  it('should not set periodoId if no periodos match in onDataChange', () => {
+    component.periodos = [...mockPeriodos];
+    const event = { target: { value: '2024-12-01' } } as any;
+    component.movimentacao.periodoId = '';
+    component.onDataChange(event);
+    expect(component.movimentacao.periodoId).toBe('');
+  });
+
+  it('should handle onValorInput with empty value', () => {
+    const event = { target: { value: '' } } as any;
+    component.movimentacao.valor = 0;
+    component.onValorInput(event);
+    expect(component.movimentacao.valor).toBe(0);
+    expect(event.target.value).toContain('R$');
+  });
+
+  it('should handle onValorInput with only negative sign', () => {
+    const event = { target: { value: '-' } } as any;
+    component.movimentacao.valor = 0;
+    component.onValorInput(event);
+    expect(component.movimentacao.valor).toBe(0);
+    expect(event.target.value).toContain('R$');
+  });
+
+  it('should sort movimentacoes correctly in ListarUltimasMovimentacoesPorInstituicaoAsync', async () => {
+    const movs = [
+      { ...mockMovimentacoes[0], valor: 10 },
+      { ...mockMovimentacoes[1], valor: 20 },
+      { ...mockMovimentacoes[1], valor: -30 },
+      { ...mockMovimentacoes[0], valor: -40 }
+    ];
+    movimentacaoService.ListarPorInstituicaoAsync.and.returnValue(Promise.resolve(movs));
+    const result = await component.ListarUltimasMovimentacoesPorInstituicaoAsync('1');
+    expect(result.length).toBe(4);
+    // O maior valor positivo deve vir primeiro
+    expect(result[0].valor).toBe(20);
+    // O menor valor negativo deve vir antes do maior negativo
+    expect(result[2].valor).toBe(-40);
+    expect(result[3].valor).toBe(-30);
+  });
 });
