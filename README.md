@@ -1,59 +1,30 @@
 # R3mFinancasFront
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.4.
+Este projeto é um sistema de controle financeiro pessoal, permitindo ao usuário gerenciar movimentações financeiras, instituições bancárias, categorias de despesas/receitas e períodos de apuração. Abaixo estão descritas as principais funcionalidades do sistema de forma não técnica:
 
-## Development server
+## Funcionalidades do Sistema
 
-To start a local development server, run:
+- **Visualização de Movimentações**: Permite listar todas as movimentações financeiras (entradas e saídas) de uma instituição bancária, filtrando por instituição e por período. O usuário pode ver detalhes como data, descrição e valor de cada movimentação.
 
-```bash
-ng serve
-```
+- **Cadastro de Nova Movimentação**: O usuário pode adicionar uma nova movimentação financeira, informando a data, descrição, valor, categoria, instituição e período correspondente.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Gestão de Instituições**: O sistema permite visualizar e selecionar diferentes instituições bancárias, exibindo o saldo atualizado de cada uma e suas movimentações associadas.
 
-## Code scaffolding
+- **Gestão de Categorias**: As movimentações podem ser classificadas em diferentes categorias (como alimentação, transporte, etc.), facilitando o controle e análise dos gastos e receitas.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Gestão de Períodos**: O usuário pode selecionar períodos (por exemplo, meses do ano) para filtrar e visualizar as movimentações e saldos referentes a cada período.
 
-```bash
-ng generate component component-name
-```
+- **Cópia de Movimentações**: É possível copiar todas as movimentações de uma instituição para a área de transferência, facilitando o compartilhamento ou exportação dos dados.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- **Atualização de Listas**: O sistema permite atualizar manualmente as listas de instituições, categorias e períodos para garantir que as informações estejam sempre atualizadas.
 
-```bash
-ng generate --help
-```
+- **Interface Intuitiva**: A interface é dividida em duas áreas principais: uma para listar e filtrar movimentações e outra para cadastrar novas movimentações, tornando o uso simples e direto.
 
-## Building
+- **Mensagens de Erro e Sucesso**: O sistema exibe mensagens claras ao usuário em caso de sucesso ou erro nas operações, como ao adicionar uma movimentação ou ao carregar listas.
 
-To build the project run:
+## Como Usar
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. **Listar Movimentações**: Selecione a instituição e o período desejado para visualizar as movimentações e o saldo correspondente.
+2. **Adicionar Movimentação**: Preencha o formulário com os dados da movimentação e clique em "Adicionar Movimentação".
+3. **Atualizar Listas**: Use os botões de atualização ao lado dos campos de seleção para garantir que as listas estejam atualizadas.
+4. **Copiar Movimentações**: Clique no ícone de cópia para copiar as movimentações da instituição selecionada.
