@@ -10,8 +10,8 @@ export class MovimentacaoService {
   private readonly BASE_URL = 'http://localhost:7050/api/movimentacao';
   constructor() { }
 
-  async ListarPorInstituicaoAsync(instituicaoId: string): Promise<MovimentacaoResponse[]> {
-    const response = await fetch(`${this.BASE_URL}/${instituicaoId}`);
+  async ListarPorInstituicaoAsync(instituicaoId: string, periodoId: string): Promise<MovimentacaoResponse[]> {
+    const response = await fetch(`${this.BASE_URL}/${instituicaoId}/${periodoId}`);
     if (!response.ok) throw new Error('Erro ao listar períodos');
     return response.json();
   }

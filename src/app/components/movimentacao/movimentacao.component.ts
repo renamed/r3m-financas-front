@@ -14,7 +14,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRefresh, faCopy  } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faCopy } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-movimentacao',
@@ -23,16 +23,48 @@ import { faRefresh, faCopy  } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './movimentacao.component.css'
 })
 export class MovimentacaoComponent {
+  async onFiltroInstituicaoChange() {
+    await this.OnListarMovimentacoesFiltroChange();
+  }  
+  
+  async onFiltroPeriodoChange() {
+    await this.OnListarMovimentacoesFiltroChange();
+  }
+
+  private async OnListarMovimentacoesFiltroChange() {
+    if (this.filtroInstituicaoId && this.filtroPeriodoId) {
+      await this.ListarInstituicoesAsync(false);
+      this.instituicao = this.instituicoes.find(i => i.instituicaoId === this.filtroInstituicaoId) || {
+        instituicaoId: '',
+        nome: '',
+        saldo: 0,
+        credito: false,
+        movimentacoes: []
+      };
+      this.instituicao.movimentacoes = await this.ListarMovimentacoesAsync(this.filtroInstituicaoId, this.filtroPeriodoId);      
+    }
+  }
   categorias: CategoryResponse[] = [];
   periodos: PeriodoResponse[] = [];
   instituicoes: InstituicaoResponse[] = [];
-  
+
+  filtroInstituicaoId: string | null = null;
+  filtroPeriodoId: string | null = null;
+
   faRefresh = faRefresh;
   faCopy = faCopy;
 
   periodoSelecionado: PeriodoResponse | null = null;
   categoriaSelecionada: CategoryResponse | null = null;
   instituicaoSelecionada: InstituicaoResponse | null = null;
+  instituicao: InstituicaoResponse = {
+    instituicaoId: '',
+    nome: '',
+    saldo: 0,
+    credito: false,
+    movimentacoes: []
+  };
+
   movimentacao: MovimentacaoRequest = {
     data: new Date(),
     descricao: '',
@@ -52,8 +84,12 @@ export class MovimentacaoComponent {
     await Promise.all([
       this.ListarCategorias(),
       this.ListarPeriodosAsync(),
-      this.ListarInstituicoesAsync()
+      this.ListarInstituicoesAsync(false)
     ]);
+
+    if (this.filtroPeriodoId && this.filtroInstituicaoId) {
+      await this.OnListarMovimentacoesFiltroChange();
+    }
   }
 
   async ListarCategorias() {
@@ -77,6 +113,17 @@ export class MovimentacaoComponent {
       const periodos_aux = await this.periodosService.ListarAsync(year);
       periodos_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.periodos = periodos_aux;
+
+      const hoje = new Date();
+      const periodoAtual = periodos_aux.find(p => {
+        const inicio = new Date(p.inicio);
+        const fim = new Date(p.fim);
+        return hoje >= inicio && hoje <= fim;
+      });
+      if (periodoAtual) {
+        this.filtroPeriodoId = periodoAtual.periodoId;
+      }
+
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
@@ -87,15 +134,15 @@ export class MovimentacaoComponent {
     }
   }
 
-  async ListarInstituicoesAsync() {
+  async ListarInstituicoesAsync(gatilhoMudancaInstituicao: boolean) {
     try {
       const instituicoes_aux = await this.instituicoesService.ListarAsync();
-      for (const inst of instituicoes_aux) {
-        inst.movimentacoes = await this.ListarUltimasMovimentacoesPorInstituicaoAsync(inst.instituicaoId);
-      }
-
       instituicoes_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.instituicoes = instituicoes_aux;
+      this.filtroInstituicaoId = this.instituicoes.length > 0 ? this.instituicoes[0].instituicaoId : null;
+      if (gatilhoMudancaInstituicao) {
+        this.onFiltroInstituicaoChange();
+      }
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
@@ -106,19 +153,19 @@ export class MovimentacaoComponent {
     }
   }
 
-  async ListarUltimasMovimentacoesPorInstituicaoAsync(instituicaoId: string): Promise<MovimentacaoResponse[]> {
-    const movimentacoes = await this.movimentacaoService.ListarPorInstituicaoAsync(instituicaoId);
+  async ListarMovimentacoesAsync(instituicaoId: string, periodoId: string): Promise<MovimentacaoResponse[]> {
+    const movimentacoes = await this.movimentacaoService.ListarPorInstituicaoAsync(instituicaoId, periodoId);
 
     movimentacoes.sort((a, b) => {
-      if (a.valor > 0 && b.valor > 0) return b.valor - a.valor;
-      if (a.valor < 0 && b.valor < 0) return a.valor - b.valor;
+      const difData = new Date(a.data).getTime() - new Date(b.data).getTime();
+      if (difData > 0) return -1;
+      if (difData < 0) return 1;
+
+      // if (a.valor > 0 && b.valor > 0) return b.valor - a.valor;
+      // if (a.valor < 0 && b.valor < 0) return a.valor - b.valor;
 
       if (a.valor < b.valor) return 1;
       if (a.valor > b.valor) return -1;
-
-      const difData = new Date(a.data).getTime() - new Date(b.data).getTime();
-      if (difData < 0) return -1;
-      if (difData > 0) return 1;
 
       return a.descricao.localeCompare(b.descricao);
     });
@@ -177,7 +224,7 @@ export class MovimentacaoComponent {
     }
 
     try {
-      await this.ListarInstituicoesAsync();
+      await this.ListarInstituicoesAsync(true);
     } catch (error: any) {
       Swal.fire({
         icon: 'warning',
@@ -212,6 +259,6 @@ export class MovimentacaoComponent {
         allowOutsideClick: false
       });
     });
-  }  
+  }
 
 }

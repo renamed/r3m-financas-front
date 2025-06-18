@@ -1,9 +1,67 @@
 <h1>Movimentações</h1>
 
 <div class="container-fluid">
+
   <div class="row">
-    <div class="col-md-8">
-      <h2>Filtros</h2>
+    <div class="col-7">
+      <h2>Listar Movimentações</h2>
+      <div class="row">
+        <div class="row">
+          <div class="col-2">
+            Instituição
+          </div>
+          <div class="col-4">
+            <select id="filtro_instituicao" class="form-control" name="filtro_instituicao" [(ngModel)]="filtroInstituicaoId" (ngModelChange)="onFiltroInstituicaoChange()">
+              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">
+                {{ instituicao.nome }}
+              </option>
+            </select>
+          </div>
+          <div class="col-2">
+            Período
+          </div>
+          <div class="col-4">
+            <select id="filtro_periodo" class="form-control" name="filtro_periodo" [(ngModel)]="filtroPeriodoId" (change)="onFiltroPeriodoChange()">
+              <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">
+                {{ periodo.nome }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        @if (instituicao != null) {
+        <div class="col-12">
+          <h3>{{ instituicao.nome }}</h3>
+          <p>Saldo: {{ instituicao.saldo | currency:'BRL' }}</p>
+          @if (!instituicao.movimentacoes || instituicao.movimentacoes.length === 0) {
+            @if(this.filtroPeriodoId === null){
+              <i>Selecione um período para ver as movimentações</i>
+            }@else {
+              <i>Instituição não possui movimentações para este período</i>
+            }
+          } @else {
+          <div id="mov-ins-{{ instituicao.instituicaoId }}">
+            <b>
+              Últimas Movimentações </b>
+            <fa-icon style="cursor: pointer;" [icon]="faCopy"
+              (click)="copiarMovimentacoes(instituicao.instituicaoId)"></fa-icon>
+
+            @for (movimentacao of instituicao.movimentacoes; track $index) {
+            <div class="row" [ngClass]="$index % 2 === 0 ? 'bg-light' : ''">
+              <div class="col-3">{{ movimentacao.data | date:'shortDate' }}</div>
+              <div class="col-6">{{ movimentacao.descricao }} </div>
+              <div class="col-3">{{ movimentacao.valor | currency: 'BRL' }} </div>
+            </div>
+            }
+            <hr />
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    <div class="col-5">
+      <h2>Nova movimentação</h2>
       <form>
         <div class="form-group">
           <label for="data">Data</label>
@@ -18,10 +76,10 @@
         <div class="form-group">
           <label for="periodo">Período</label>
           <div class="d-flex align-items-center gap-2">
-          <select id="periodo" class="form-control" name="periodo" [(ngModel)]="movimentacao.periodoId">
-            <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">{{ periodo.nome }}</option>
-          </select>
-          <button type="button" class="btn btn-secondary ms-2" (click)="ListarPeriodosAsync()">
+            <select id="periodo" class="form-control" name="periodo" [(ngModel)]="movimentacao.periodoId">
+              <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">{{ periodo.nome }}</option>
+            </select>
+            <button type="button" class="btn btn-secondary ms-2" (click)="ListarPeriodosAsync()">
               <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
@@ -33,28 +91,27 @@
               <option *ngFor="let categoria of categorias" [value]="categoria.categoriaId">{{ categoria.nome }}</option>
             </select>
             <button type="button" class="btn btn-secondary ms-2" (click)="ListarCategorias()">
-               <fa-icon [icon]="faRefresh"></fa-icon>
+              <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
         </div>
         <div class="form-group">
           <label for="instituicao">Instituição</label>
           <div class="d-flex align-items-center gap-2">
-          <select id="instituicao" class="form-control" name="instituicao" [(ngModel)]="movimentacao.instituicaoId">
-            <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">{{ instituicao.nome }}
-            </option>
-          </select>
-          <button type="button" class="btn btn-secondary ms-2" (click)="ListarInstituicoesAsync()">
+            <select id="instituicao" class="form-control" name="instituicao" [(ngModel)]="movimentacao.instituicaoId">
+              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">{{ instituicao.nome
+                }}
+              </option>
+            </select>
+            <button type="button" class="btn btn-secondary ms-2" (click)="ListarInstituicoesAsync(false)">
               <fa-icon [icon]="faRefresh"></fa-icon>
             </button>
           </div>
         </div>
         <div class="form-group">
           <label for="valor">Valor</label>
-            <input type="text" id="valor" name="valor" class="form-control"
-       placeholder="Valor da movimentação"
-       [value]="movimentacao.valor | currency:'BRL':'symbol':'1.2-2'"
-       (input)="onValorInput($event)" />
+          <input type="text" id="valor" name="valor" class="form-control" placeholder="Valor da movimentação"
+            [value]="movimentacao.valor | currency:'BRL':'symbol':'1.2-2'" (input)="onValorInput($event)" />
         </div>
         <div class="row mt-2 text-end">
           <div class="col-md-12">
@@ -63,32 +120,5 @@
         </div>
       </form>
     </div>
-    <div class="col-md-4">
-      @for (instituicao of instituicoes; track $index) {
-      <div class="row">
-        <div class="col-md-12">
-          <h3>{{ instituicao.nome }}</h3>
-          <p>Saldo: {{ instituicao.saldo | currency:'BRL' }}</p>
-          @if (!instituicao.movimentacoes || instituicao.movimentacoes.length === 0) {
-            <b>Instituição não possui movimentações</b>
-          } @else {
-          <div id="mov-ins-{{ instituicao.instituicaoId }}">
-            <b>
-                Últimas Movimentações </b>
-                <fa-icon style="cursor: pointer;" [icon]="faCopy" (click)="copiarMovimentacoes(instituicao.instituicaoId)"></fa-icon> 
-            
-            @for (movimentacao of instituicao.movimentacoes; track $index) {
-            <div class="row">
-              <div class="col-3">{{ movimentacao.data | date:'shortDate' }}</div>
-              <div class="col-6">{{ movimentacao.descricao }} </div>
-              <div class="col-3">{{ movimentacao.valor | currency: 'BRL' }} </div>
-            </div>
-            }
-            <hr />
-          </div>
-          }
-        </div>
-      </div>
-      }
-    </div>
+
   </div>

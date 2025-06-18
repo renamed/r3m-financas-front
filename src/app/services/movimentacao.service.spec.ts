@@ -37,13 +37,13 @@ describe('MovimentacaoService', () => {
       ok: true,
       json: async () => mockMovimentacoes
     } as Response);
-    const result = await service.ListarPorInstituicaoAsync('1');
+    const result = await service.ListarPorInstituicaoAsync('1', '1');
     expect(result).toEqual(mockMovimentacoes);
   });
 
   it('should throw error if ListarPorInstituicaoAsync fails', async () => {
     spyOn(window, 'fetch').and.resolveTo({ ok: false } as Response);
-    await expectAsync(service.ListarPorInstituicaoAsync('1')).toBeRejectedWithError('Erro ao listar períodos');
+    await expectAsync(service.ListarPorInstituicaoAsync('1', '1')).toBeRejectedWithError('Erro ao listar períodos');
   });
 
   it('should add movimentacao (AdicionarAsync)', async () => {
