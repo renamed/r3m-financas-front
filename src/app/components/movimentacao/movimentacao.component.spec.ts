@@ -231,24 +231,24 @@ describe('MovimentacaoComponent', () => {
   });
 
   it('should call onFiltroInstituicaoChange and update instituicao.movimentacoes', async () => {
-    spyOn<any>(component as any, 'OnListarMovimentacoesFiltroChange').and.returnValue(Promise.resolve());
+    const spy = spyOn<any>(component as any, 'OnListarMovimentacoesFiltroChangeAsync').and.returnValue(Promise.resolve());
     await component.onFiltroInstituicaoChange();
-    expect((component as any).OnListarMovimentacoesFiltroChange).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should call onFiltroPeriodoChange and update instituicao.movimentacoes', async () => {
-    spyOn<any>(component as any, 'OnListarMovimentacoesFiltroChange').and.returnValue(Promise.resolve());
+    const spy = spyOn<any>(component as any, 'OnListarMovimentacoesFiltroChangeAsync').and.returnValue(Promise.resolve());
     await component.onFiltroPeriodoChange();
-    expect((component as any).OnListarMovimentacoesFiltroChange).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
-  it('should call OnListarMovimentacoesFiltroChange and update instituicao', async () => {
+  it('should call OnListarMovimentacoesFiltroChangeAsync and update instituicao', async () => {
     component.filtroInstituicaoId = '1';
     component.filtroPeriodoId = '1';
     spyOn(component, 'ListarInstituicoesAsync').and.returnValue(Promise.resolve());
     spyOn(component, 'ListarMovimentacoesAsync').and.returnValue(Promise.resolve([...mockMovimentacoes]));
     component.instituicoes = [...mockInstituicoes];
-    await (component as any).OnListarMovimentacoesFiltroChange();
+    await (component as any).OnListarMovimentacoesFiltroChangeAsync();
     expect(component.instituicao.instituicaoId).toBe('1');
     expect(component.instituicao.movimentacoes.length).toBe(2);
   });
@@ -257,33 +257,17 @@ describe('MovimentacaoComponent', () => {
     component.filtroInstituicaoId = null;
     component.filtroPeriodoId = '1';
     const spy = spyOn(component, 'ListarInstituicoesAsync');
-    await (component as any).OnListarMovimentacoesFiltroChange();
+    await (component as any).OnListarMovimentacoesFiltroChangeAsync();
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should not set filtroPeriodoId if no current period in ListarPeriodosAsync', async () => {
-    const periodos = [
-      { periodoId: '3', nome: 'Março', inicio: new Date('2025-03-01'), fim: new Date('2025-03-31') }
-    ];
-    periodosService.ListarAsync.and.returnValue(Promise.resolve(periodos));
-    await component.ListarPeriodosAsync();
-    expect(component.filtroPeriodoId).not.toBe('3');
-  });
-
-  it('should call ListarInstituicoesAsync with gatilhoMudancaInstituicao true and call onFiltroInstituicaoChange', async () => {
-    const spy = spyOn(component, 'onFiltroInstituicaoChange').and.returnValue(Promise.resolve());
-    instituicoesService.ListarAsync.and.returnValue(Promise.resolve([...mockInstituicoes]));
-    await component.ListarInstituicoesAsync(true);
-    expect(spy).toHaveBeenCalled();
-  });
-
-  it('should call ngOnInit and trigger OnListarMovimentacoesFiltroChange if filters are set', async () => {
+  it('should call ngOnInit and trigger OnListarMovimentacoesFiltroChangeAsync if filters are set', async () => {
     spyOn(component, 'ListarCategorias').and.returnValue(Promise.resolve());
     spyOn(component, 'ListarPeriodosAsync').and.returnValue(Promise.resolve());
     spyOn(component, 'ListarInstituicoesAsync').and.returnValue(Promise.resolve());
     component.filtroPeriodoId = '1';
     component.filtroInstituicaoId = '1';
-    const spy = spyOn(component as any, 'OnListarMovimentacoesFiltroChange').and.returnValue(Promise.resolve());
+    const spy = spyOn<any>(component as any, 'OnListarMovimentacoesFiltroChangeAsync').and.returnValue(Promise.resolve());
     await component.ngOnInit();
     expect(spy).toHaveBeenCalled();
   });
@@ -304,5 +288,81 @@ describe('MovimentacaoComponent', () => {
     const swalSpy = spyOn<any>(Swal, 'fire');
     await component.onSubmit();
     expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'warning' }));
+  });
+
+  it('should reset instituicao if filtroInstituicaoId or filtroPeriodoId is missing in OnListarMovimentacoesFiltroChangeAsync', async () => {
+    component.filtroInstituicaoId = null;
+    component.filtroPeriodoId = null;
+    component.instituicao = { instituicaoId: 'x', nome: 'x', saldo: 1, credito: false, movimentacoes: [{} as any] };
+    await (component as any).OnListarMovimentacoesFiltroChangeAsync();
+    expect(component.instituicao.instituicaoId).toBe('');
+    expect(component.instituicao.movimentacoes.length).toBe(0);
+  });
+
+  it('should set empty movimentacoes if instituicao not found in OnListarMovimentacoesFiltroChangeAsync', async () => {
+    component.filtroInstituicaoId = 'notfound';
+    component.filtroPeriodoId = '1';
+    component.instituicoes = [];
+    await (component as any).OnListarMovimentacoesFiltroChangeAsync();
+    expect(component.instituicao.movimentacoes.length).toBe(0);
+  });
+
+  it('should not call onFiltroInstituicaoChange if gatilhoMudancaInstituicao is false', async () => {
+    instituicoesService.ListarAsync.and.returnValue(Promise.resolve([...mockInstituicoes]));
+    const spy = spyOn(component, 'onFiltroInstituicaoChange');
+    await component.ListarInstituicoesAsync(false);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should handle error in copiarMovimentacoes when navigator.clipboard.writeText throws synchronously', async () => {
+    const instituicao = { ...mockInstituicoes[0], movimentacoes: [...mockMovimentacoes] };
+    component.instituicoes = [instituicao];
+    spyOn(navigator.clipboard, 'writeText').and.callFake(() => { throw new Error('sync error'); });
+    const swalSpy = spyOn<any>(Swal, 'fire');
+    try {
+      component.copiarMovimentacoes(instituicao.instituicaoId);
+    } catch {}
+    expect(swalSpy).toHaveBeenCalled();
+  });
+
+  it('should not set filtroInstituicaoId if instituicoes is empty in ListarInstituicoesAsync', async () => {
+    instituicoesService.ListarAsync.and.returnValue(Promise.resolve([]));
+    component.filtroInstituicaoId = null;
+    await component.ListarInstituicoesAsync(false);
+    expect(component.filtroInstituicaoId).toBeNull();
+  });
+
+  it('should not set filtroPeriodoId if no period matches today in ListarPeriodosAsync', async () => {
+    const periodos = [
+      { periodoId: '3', nome: 'Março', inicio: new Date('2020-03-01'), fim: new Date('2020-03-31') }
+    ];
+    periodosService.ListarAsync.and.returnValue(Promise.resolve(periodos));
+    component.filtroPeriodoId = null;
+    await component.ListarPeriodosAsync();
+    expect(component.filtroPeriodoId).toBeNull();
+  });
+
+  it('should not update periodoId in onDataChange if periodos is empty', () => {
+    component.periodos = [];
+    component.movimentacao.periodoId = 'x';
+    const event = { target: { value: '2025-01-15' } } as any;
+    component.onDataChange(event);
+    expect(component.movimentacao.periodoId).toBe('x');
+  });
+
+  it('should handle onValorInput with non-numeric and non-negative', () => {
+    const event = { target: { value: 'abc' } } as any;
+    component.movimentacao.valor = 0;
+    component.onValorInput(event);
+    expect(component.movimentacao.valor).toBe(0);
+    expect(event.target.value).toContain('R$');
+  });
+
+  it('should handle onValorInput with whitespace', () => {
+    const event = { target: { value: '   ' } } as any;
+    component.movimentacao.valor = 0;
+    component.onValorInput(event);
+    expect(component.movimentacao.valor).toBe(0);
+    expect(event.target.value).toContain('R$');
   });
 });

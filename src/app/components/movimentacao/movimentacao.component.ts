@@ -24,16 +24,17 @@ import { faRefresh, faCopy } from '@fortawesome/free-solid-svg-icons';
 })
 export class MovimentacaoComponent {
   async onFiltroInstituicaoChange() {
-    await this.OnListarMovimentacoesFiltroChange();
-  }  
-  
-  async onFiltroPeriodoChange() {
-    await this.OnListarMovimentacoesFiltroChange();
+    await this.OnListarMovimentacoesFiltroChangeAsync();
   }
 
-  private async OnListarMovimentacoesFiltroChange() {
+  async onFiltroPeriodoChange() {
+    await this.OnListarMovimentacoesFiltroChangeAsync();
+  }
+
+  private async OnListarMovimentacoesFiltroChangeAsync() {
     if (this.filtroInstituicaoId && this.filtroPeriodoId) {
-      await this.ListarInstituicoesAsync(false);
+            await this.ListarInstituicoesAsync(false);
+
       this.instituicao = this.instituicoes.find(i => i.instituicaoId === this.filtroInstituicaoId) || {
         instituicaoId: '',
         nome: '',
@@ -41,7 +42,20 @@ export class MovimentacaoComponent {
         credito: false,
         movimentacoes: []
       };
-      this.instituicao.movimentacoes = await this.ListarMovimentacoesAsync(this.filtroInstituicaoId, this.filtroPeriodoId);      
+
+      if (this.instituicao.instituicaoId) {
+        this.instituicao.movimentacoes = await this.ListarMovimentacoesAsync(this.filtroInstituicaoId, this.filtroPeriodoId);
+      } else {
+        this.instituicao.movimentacoes = [];
+      }
+    } else {
+      this.instituicao = {
+        instituicaoId: '',
+        nome: '',
+        saldo: 0,
+        credito: false,
+        movimentacoes: []
+      };
     }
   }
   categorias: CategoryResponse[] = [];
@@ -88,7 +102,7 @@ export class MovimentacaoComponent {
     ]);
 
     if (this.filtroPeriodoId && this.filtroInstituicaoId) {
-      await this.OnListarMovimentacoesFiltroChange();
+      await this.OnListarMovimentacoesFiltroChangeAsync();
     }
   }
 
@@ -139,9 +153,13 @@ export class MovimentacaoComponent {
       const instituicoes_aux = await this.instituicoesService.ListarAsync();
       instituicoes_aux.sort((a, b) => a.nome.localeCompare(b.nome));
       this.instituicoes = instituicoes_aux;
-      this.filtroInstituicaoId = this.instituicoes.length > 0 ? this.instituicoes[0].instituicaoId : null;
+
+      if (this.filtroInstituicaoId === null && this.instituicoes.length > 0) {
+        this.filtroInstituicaoId = this.instituicoes[0].instituicaoId;
+      }
+
       if (gatilhoMudancaInstituicao) {
-        this.onFiltroInstituicaoChange();
+        await this.onFiltroInstituicaoChange();
       }
     } catch (error: any) {
       Swal.fire({
@@ -244,21 +262,30 @@ export class MovimentacaoComponent {
       return `${dataFormatada};${dataFormatada};${m.descricao};;${valorFormatado};${valorFormatado}`;
     }).join('\n');
 
-    navigator.clipboard.writeText(csv).then(() => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Movimentações copiadas',
-        text: 'As movimentações foram copiadas para a área de transferência.',
-        allowOutsideClick: false
+    try {
+      navigator.clipboard.writeText(csv).then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Movimentações copiadas',
+          text: 'As movimentações foram copiadas para a área de transferência.',
+          allowOutsideClick: false
+        });
+      }).catch((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao copiar movimentações',
+          html: `Não foi possível copiar as movimentações. <p/> ${error.message}`,
+          allowOutsideClick: false
+        });
       });
-    }).catch((error) => {
+    } catch (error: any) {
       Swal.fire({
         icon: 'error',
         title: 'Erro ao copiar movimentações',
         html: `Não foi possível copiar as movimentações. <p/> ${error.message}`,
         allowOutsideClick: false
       });
-    });
+    }
   }
 
 }
