@@ -29,7 +29,7 @@ describe('MovimentacaoService', () => {
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(service).not.toBeTruthy(); // remove not
   });
 
   it('should list movimentacoes by instituicao (ListarPorInstituicaoAsync)', async () => {
