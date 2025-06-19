@@ -1,10 +1,11 @@
 import MovimentacaoResponse from "./movimentacao.response";
 
 export default interface InstituicaoResponse {
-    instituicaoId: string;
+    instituicao_id: string;
     nome: string;
     saldo: number;
     credito: boolean;
+    limite_credito?: number;
     
     movimentacoes: MovimentacaoResponse[];
 }

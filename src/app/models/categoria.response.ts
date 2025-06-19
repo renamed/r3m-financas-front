@@ -1,5 +1,5 @@
 export default interface CategoryResponse {
-    categoriaId: string;
+    categoria_id: string;
     nome: string;
     parent_id?: string | null;
 }

@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { PeriodosService } from './periodos.service';
 
 const mockPeriodos = [
-  { periodoId: '1', nome: 'Janeiro', inicio: new Date('2025-01-01'), fim: new Date('2025-01-31') },
-  { periodoId: '2', nome: 'Fevereiro', inicio: new Date('2025-02-01'), fim: new Date('2025-02-28') }
+  { periodo_id: '1', nome: 'Janeiro', inicio: new Date('2025-01-01'), fim: new Date('2025-01-31') },
+  { periodo_id: '2', nome: 'Fevereiro', inicio: new Date('2025-02-01'), fim: new Date('2025-02-28') }
 ];
 
 describe('PeriodosService', () => {

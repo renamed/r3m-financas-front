@@ -1,5 +1,5 @@
 export default interface PeriodoResponse {
-    periodoId: string;
+    periodo_id: string;
     nome: string;
     inicio: Date;
     fim: Date;

@@ -14,24 +14,24 @@ import Swal from 'sweetalert2';
 
 // Mocks com tipos corretos
 const mockCategorias: CategoryResponse[] = [
-  { categoriaId: '1', nome: 'Alimentação' },
-  { categoriaId: '2', nome: 'Transporte' }
+  { categoria_id: '1', nome: 'Alimentação' },
+  { categoria_id: '2', nome: 'Transporte' }
 ];
 const mockPeriodos: PeriodoResponse[] = [
-  { periodoId: '1', nome: 'Janeiro', inicio: new Date('2025-01-01'), fim: new Date('2025-01-31') },
-  { periodoId: '2', nome: 'Fevereiro', inicio: new Date('2025-02-01'), fim: new Date('2025-02-28') }
+  { periodo_id: '1', nome: 'Janeiro', inicio: new Date('2025-01-01'), fim: new Date('2025-01-31') },
+  { periodo_id: '2', nome: 'Fevereiro', inicio: new Date('2025-02-01'), fim: new Date('2025-02-28') }
 ];
 
 const mockInstituicoes: InstituicaoResponse[] = [
   {
-    instituicaoId: '1',
+    instituicao_id: '1',
     nome: 'Banco A',
     saldo: 100,
     credito: false,
     movimentacoes: [] as MovimentacaoResponse[]
   },
   {
-    instituicaoId: '2',
+    instituicao_id: '2',
     nome: 'Banco B',
     saldo: 200,
     credito: false,
@@ -117,12 +117,12 @@ describe('MovimentacaoComponent', () => {
     expect(result.length).toBe(2);
   });
 
-  it('should call onDataChange and set periodoId', () => {
+  it('should call onDataChange and set periodo_id', () => {
     component.periodos = [...mockPeriodos];
     const event = { target: { value: '2025-01-15' } } as any;
-    component.movimentacao.periodoId = '';
+    component.movimentacao.periodo_id = '';
     component.onDataChange(event);
-    expect(component.movimentacao.periodoId).toBe('1');
+    expect(component.movimentacao.periodo_id).toBe('1');
   });
 
   it('should call onValorInput and update value (positive)', () => {
@@ -161,7 +161,7 @@ describe('MovimentacaoComponent', () => {
     component.instituicoes = [instituicao];
     const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
     const swalSpy = spyOn<any>(Swal, 'fire');
-    await component.copiarMovimentacoes(instituicao.instituicaoId);
+    await component.copiarMovimentacoes(instituicao.instituicao_id);
     expect(clipboardSpy).toHaveBeenCalled();
     expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
   });
@@ -172,7 +172,7 @@ describe('MovimentacaoComponent', () => {
     const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.reject({ message: 'erro' }));
     const swalSpy = spyOn<any>(Swal, 'fire').and.callThrough();
     // Precisa aguardar o catch da promise
-    await component.copiarMovimentacoes(instituicao.instituicaoId);
+    await component.copiarMovimentacoes(instituicao.instituicao_id);
     // Aguarda o event loop para garantir que o catch foi executado
     await new Promise(res => setTimeout(res));
     expect(clipboardSpy).toHaveBeenCalled();
@@ -189,12 +189,12 @@ describe('MovimentacaoComponent', () => {
     expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
   });
 
-  it('should not set periodoId if no periodos match in onDataChange', () => {
+  it('should not set periodo_id if no periodos match in onDataChange', () => {
     component.periodos = [...mockPeriodos];
     const event = { target: { value: '2024-12-01' } } as any;
-    component.movimentacao.periodoId = '';
+    component.movimentacao.periodo_id = '';
     component.onDataChange(event);
-    expect(component.movimentacao.periodoId).toBe('');
+    expect(component.movimentacao.periodo_id).toBe('');
   });
 
   it('should handle onValorInput with empty value', () => {
@@ -249,7 +249,7 @@ describe('MovimentacaoComponent', () => {
     spyOn(component, 'ListarMovimentacoesAsync').and.returnValue(Promise.resolve([...mockMovimentacoes]));
     component.instituicoes = [...mockInstituicoes];
     await (component as any).OnListarMovimentacoesFiltroChangeAsync();
-    expect(component.instituicao.instituicaoId).toBe('1');
+    expect(component.instituicao.instituicao_id).toBe('1');
     expect(component.instituicao.movimentacoes.length).toBe(2);
   });
 
@@ -277,7 +277,7 @@ describe('MovimentacaoComponent', () => {
     component.instituicoes = [instituicao];
     const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
     const swalSpy = spyOn<any>(Swal, 'fire');
-    await component.copiarMovimentacoes(instituicao.instituicaoId);
+    await component.copiarMovimentacoes(instituicao.instituicao_id);
     expect(clipboardSpy).toHaveBeenCalledWith('');
     expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
   });
@@ -293,9 +293,9 @@ describe('MovimentacaoComponent', () => {
   it('should reset instituicao if filtroInstituicaoId or filtroPeriodoId is missing in OnListarMovimentacoesFiltroChangeAsync', async () => {
     component.filtroInstituicaoId = null;
     component.filtroPeriodoId = null;
-    component.instituicao = { instituicaoId: 'x', nome: 'x', saldo: 1, credito: false, movimentacoes: [{} as any] };
+    component.instituicao = { instituicao_id: 'x', nome: 'x', saldo: 1, credito: false, movimentacoes: [{} as any] };
     await (component as any).OnListarMovimentacoesFiltroChangeAsync();
-    expect(component.instituicao.instituicaoId).toBe('');
+    expect(component.instituicao.instituicao_id).toBe('');
     expect(component.instituicao.movimentacoes.length).toBe(0);
   });
 
@@ -320,7 +320,7 @@ describe('MovimentacaoComponent', () => {
     spyOn(navigator.clipboard, 'writeText').and.callFake(() => { throw new Error('sync error'); });
     const swalSpy = spyOn<any>(Swal, 'fire');
     try {
-      component.copiarMovimentacoes(instituicao.instituicaoId);
+      component.copiarMovimentacoes(instituicao.instituicao_id);
     } catch {}
     expect(swalSpy).toHaveBeenCalled();
   });
@@ -334,7 +334,7 @@ describe('MovimentacaoComponent', () => {
 
   it('should not set filtroPeriodoId if no period matches today in ListarPeriodosAsync', async () => {
     const periodos = [
-      { periodoId: '3', nome: 'Março', inicio: new Date('2020-03-01'), fim: new Date('2020-03-31') }
+      { periodo_id: '3', nome: 'Março', inicio: new Date('2020-03-01'), fim: new Date('2020-03-31') }
     ];
     periodosService.ListarAsync.and.returnValue(Promise.resolve(periodos));
     component.filtroPeriodoId = null;
@@ -342,12 +342,12 @@ describe('MovimentacaoComponent', () => {
     expect(component.filtroPeriodoId).toBeNull();
   });
 
-  it('should not update periodoId in onDataChange if periodos is empty', () => {
+  it('should not update periodo_id in onDataChange if periodos is empty', () => {
     component.periodos = [];
-    component.movimentacao.periodoId = 'x';
+    component.movimentacao.periodo_id = 'x';
     const event = { target: { value: '2025-01-15' } } as any;
     component.onDataChange(event);
-    expect(component.movimentacao.periodoId).toBe('x');
+    expect(component.movimentacao.periodo_id).toBe('x');
   });
 
   it('should handle onValorInput with non-numeric and non-negative', () => {
@@ -364,5 +364,37 @@ describe('MovimentacaoComponent', () => {
     component.onValorInput(event);
     expect(component.movimentacao.valor).toBe(0);
     expect(event.target.value).toContain('R$');
+  });
+
+  it('should return 0 in getProximaFatura if not credito', () => {
+    const inst = { ...mockInstituicoes[0], credito: false };
+    expect(component.getProximaFatura(inst)).toBe(0);
+  });
+
+  it('should return 0 in getProximaFatura if limite_credito is undefined', () => {
+    const inst = { ...mockInstituicoes[0], credito: true, limite_credito: undefined };
+    expect(component.getProximaFatura(inst)).toBe(0);
+  });
+
+  it('should return correct value in getProximaFatura', () => {
+    const inst = { ...mockInstituicoes[0], credito: true, limite_credito: 1000, saldo: -200 };
+    expect(component.getProximaFatura(inst)).toBe(800);
+  });
+
+  it('should handle onDataChange with invalid event', () => {
+    component.periodos = [...mockPeriodos];
+    const event = { target: {} } as any;
+    component.movimentacao.periodo_id = 'x';
+    component.onDataChange(event);
+    expect(component.movimentacao.periodo_id).toBe('x');
+  });
+
+  it('should handle copiarMovimentacoes with undefined instituicao', async () => {
+    component.instituicoes = [];
+    const clipboardSpy = spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
+    const swalSpy = spyOn<any>(Swal, 'fire');
+    await component.copiarMovimentacoes('nao-existe');
+    expect(clipboardSpy).toHaveBeenCalledWith('');
+    expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
   });
 });

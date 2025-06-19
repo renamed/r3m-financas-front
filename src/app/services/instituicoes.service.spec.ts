@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { InstituicoesService } from './instituicoes.service';
 
 const mockInstituicoes = [
-  { instituicaoId: '1', nome: 'Banco A', saldo: 100, credito: false, movimentacoes: [] },
-  { instituicaoId: '2', nome: 'Banco B', saldo: 200, credito: false, movimentacoes: [] }
+  { instituicao_id: '1', nome: 'Banco A', saldo: 100, credito: false, movimentacoes: [] },
+  { instituicao_id: '2', nome: 'Banco B', saldo: 200, credito: false, movimentacoes: [] }
 ];
 
 describe('InstituicoesService', () => {

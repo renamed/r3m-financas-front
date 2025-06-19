@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { CategoriasService } from './categorias.service';
 
 const mockCategorias = [
-  { categoriaId: '1', nome: 'Alimentação' },
-  { categoriaId: '2', nome: 'Transporte' }
+  { categoria_id: '1', nome: 'Alimentação' },
+  { categoria_id: '2', nome: 'Transporte' }
 ];
 
 describe('CategoriasService', () => {

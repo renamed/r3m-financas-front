@@ -3,16 +3,16 @@ import { MovimentacaoService } from './movimentacao.service';
 import { MovimentacaoRequest } from '../models/movimentacao.request';
 
 const mockMovimentacoes = [
-  { movimentacaoId: '1', valor: 10, data: new Date(), descricao: 'Teste', categoria: { categoriaId: '1', nome: 'Cat' }, instituicao: { instituicaoId: '1', nome: 'Banco', saldo: 100, credito: false, movimentacoes: [] }, periodo: { periodoId: '1', nome: 'Período', inicio: new Date(), fim: new Date() } }
+  { movimentacaoId: '1', valor: 10, data: new Date(), descricao: 'Teste', categoria: { categoria_id: '1', nome: 'Cat' }, instituicao: { instituicao_id: '1', nome: 'Banco', saldo: 100, credito: false, movimentacoes: [] }, periodo: { periodo_id: '1', nome: 'Período', inicio: new Date(), fim: new Date() } }
 ];
 
 const mockRequest: MovimentacaoRequest = {
   data: new Date(),
   descricao: 'Teste',
   valor: 10,
-  categoriaId: '1',
-  instituicaoId: '1',
-  periodoId: '1'
+  categoria_id: '1',
+  instituicao_id: '1',
+  periodo_id: '1'
 };
 
 describe('MovimentacaoService', () => {
@@ -54,5 +54,34 @@ describe('MovimentacaoService', () => {
   it('should throw error if AdicionarAsync fails', async () => {
     spyOn(window, 'fetch').and.resolveTo({ ok: false } as Response);
     await expectAsync(service.AdicionarAsync(mockRequest)).toBeRejectedWithError('Erro ao adicionar movimentação');
+  });
+
+  it('should call fetch with correct URL and method for AdicionarAsync', async () => {
+    const spy = spyOn(window, 'fetch').and.resolveTo({ ok: true } as Response);
+    await service.AdicionarAsync(mockRequest);
+    expect(spy).toHaveBeenCalledWith(
+      'http://localhost:7050/api/movimentacao',
+      jasmine.objectContaining({
+        method: 'POST',
+        headers: jasmine.objectContaining({ 'Content-Type': 'application/json' }),
+        body: jasmine.any(String)
+      })
+    );
+  });
+
+  it('should call fetch with correct URL for ListarPorInstituicaoAsync', async () => {
+    const spy = spyOn(window, 'fetch').and.resolveTo({ ok: true, json: async () => mockMovimentacoes } as Response);
+    await service.ListarPorInstituicaoAsync('1', '1');
+    expect(spy).toHaveBeenCalledWith('http://localhost:7050/api/movimentacao/1/1');
+  });
+
+  it('should throw if fetch throws (network error) in ListarPorInstituicaoAsync', async () => {
+    spyOn(window, 'fetch').and.callFake(() => { throw new Error('Network'); });
+    await expectAsync(service.ListarPorInstituicaoAsync('1', '1')).toBeRejectedWithError('Network');
+  });
+
+  it('should throw if fetch throws (network error) in AdicionarAsync', async () => {
+    spyOn(window, 'fetch').and.callFake(() => { throw new Error('Network'); });
+    await expectAsync(service.AdicionarAsync(mockRequest)).toBeRejectedWithError('Network');
   });
 });

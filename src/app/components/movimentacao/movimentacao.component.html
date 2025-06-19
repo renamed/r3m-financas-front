@@ -12,7 +12,7 @@
           </div>
           <div class="col-4">
             <select id="filtro_instituicao" class="form-control" name="filtro_instituicao" [(ngModel)]="filtroInstituicaoId" (ngModelChange)="onFiltroInstituicaoChange()">
-              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">
+              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicao_id">
                 {{ instituicao.nome }}
               </option>
             </select>
@@ -22,7 +22,7 @@
           </div>
           <div class="col-4">
             <select id="filtro_periodo" class="form-control" name="filtro_periodo" [(ngModel)]="filtroPeriodoId" (change)="onFiltroPeriodoChange()">
-              <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">
+              <option *ngFor="let periodo of periodos" [value]="periodo.periodo_id">
                 {{ periodo.nome }}
               </option>
             </select>
@@ -32,7 +32,10 @@
         @if (instituicao != null) {
         <div class="col-12">
           <h3>{{ instituicao.nome }}</h3>
-          <p>Saldo: {{ instituicao.saldo | currency:'BRL' }}</p>
+          
+          Saldo: {{ instituicao.saldo | currency:'BRL' }}
+          <span *ngIf="instituicao.credito"><p>Próxima fatura: {{ getProximaFatura(instituicao) | currency:'BRL' }}</p></span>
+          
           @if (!instituicao.movimentacoes || instituicao.movimentacoes.length === 0) {
             @if(this.filtroPeriodoId === null){
               <i>Selecione um período para ver as movimentações</i>
@@ -40,11 +43,11 @@
               <i>Instituição não possui movimentações para este período</i>
             }
           } @else {
-          <div id="mov-ins-{{ instituicao.instituicaoId }}">
+          <div id="mov-ins-{{ instituicao.instituicao_id }}">
             <b>
               Últimas Movimentações </b>
             <fa-icon style="cursor: pointer;" [icon]="faCopy"
-              (click)="copiarMovimentacoes(instituicao.instituicaoId)"></fa-icon>
+              (click)="copiarMovimentacoes(instituicao.instituicao_id)"></fa-icon>
 
             @for (movimentacao of instituicao.movimentacoes; track $index) {
             <div class="row" [ngClass]="$index % 2 === 0 ? 'bg-light' : ''">
@@ -76,8 +79,8 @@
         <div class="form-group">
           <label for="periodo">Período</label>
           <div class="d-flex align-items-center gap-2">
-            <select id="periodo" class="form-control" name="periodo" [(ngModel)]="movimentacao.periodoId">
-              <option *ngFor="let periodo of periodos" [value]="periodo.periodoId">{{ periodo.nome }}</option>
+            <select id="periodo" class="form-control" name="periodo" [(ngModel)]="movimentacao.periodo_id">
+              <option *ngFor="let periodo of periodos" [value]="periodo.periodo_id">{{ periodo.nome }}</option>
             </select>
             <button type="button" class="btn btn-secondary ms-2" (click)="ListarPeriodosAsync()">
               <fa-icon [icon]="faRefresh"></fa-icon>
@@ -87,8 +90,8 @@
         <div class="form-group">
           <label for="categoria">Categoria</label>
           <div class="d-flex align-items-center gap-2">
-            <select id="categoria" class="form-control" name="categoria" [(ngModel)]="movimentacao.categoriaId">
-              <option *ngFor="let categoria of categorias" [value]="categoria.categoriaId">{{ categoria.nome }}</option>
+            <select id="categoria" class="form-control" name="categoria" [(ngModel)]="movimentacao.categoria_id">
+              <option *ngFor="let categoria of categorias" [value]="categoria.categoria_id">{{ categoria.nome }}</option>
             </select>
             <button type="button" class="btn btn-secondary ms-2" (click)="ListarCategorias()">
               <fa-icon [icon]="faRefresh"></fa-icon>
@@ -98,8 +101,8 @@
         <div class="form-group">
           <label for="instituicao">Instituição</label>
           <div class="d-flex align-items-center gap-2">
-            <select id="instituicao" class="form-control" name="instituicao" [(ngModel)]="movimentacao.instituicaoId">
-              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicaoId">{{ instituicao.nome
+            <select id="instituicao" class="form-control" name="instituicao" [(ngModel)]="movimentacao.instituicao_id">
+              <option *ngFor="let instituicao of instituicoes" [value]="instituicao.instituicao_id">{{ instituicao.nome
                 }}
               </option>
             </select>

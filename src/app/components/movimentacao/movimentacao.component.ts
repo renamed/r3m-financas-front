@@ -35,22 +35,22 @@ export class MovimentacaoComponent {
     if (this.filtroInstituicaoId && this.filtroPeriodoId) {
             await this.ListarInstituicoesAsync(false);
 
-      this.instituicao = this.instituicoes.find(i => i.instituicaoId === this.filtroInstituicaoId) || {
-        instituicaoId: '',
+      this.instituicao = this.instituicoes.find(i => i.instituicao_id === this.filtroInstituicaoId) || {
+        instituicao_id: '',
         nome: '',
         saldo: 0,
         credito: false,
         movimentacoes: []
       };
 
-      if (this.instituicao.instituicaoId) {
+      if (this.instituicao.instituicao_id) {
         this.instituicao.movimentacoes = await this.ListarMovimentacoesAsync(this.filtroInstituicaoId, this.filtroPeriodoId);
       } else {
         this.instituicao.movimentacoes = [];
       }
     } else {
       this.instituicao = {
-        instituicaoId: '',
+        instituicao_id: '',
         nome: '',
         saldo: 0,
         credito: false,
@@ -72,7 +72,7 @@ export class MovimentacaoComponent {
   categoriaSelecionada: CategoryResponse | null = null;
   instituicaoSelecionada: InstituicaoResponse | null = null;
   instituicao: InstituicaoResponse = {
-    instituicaoId: '',
+    instituicao_id: '',
     nome: '',
     saldo: 0,
     credito: false,
@@ -83,9 +83,9 @@ export class MovimentacaoComponent {
     data: new Date(),
     descricao: '',
     valor: 0,
-    categoriaId: '',
-    instituicaoId: '',
-    periodoId: ''
+    categoria_id: '',
+    instituicao_id: '',
+    periodo_id: ''
   };
 
   constructor(private categoryService: CategoriasService
@@ -135,7 +135,7 @@ export class MovimentacaoComponent {
         return hoje >= inicio && hoje <= fim;
       });
       if (periodoAtual) {
-        this.filtroPeriodoId = periodoAtual.periodoId;
+        this.filtroPeriodoId = periodoAtual.periodo_id;
       }
 
     } catch (error: any) {
@@ -155,7 +155,7 @@ export class MovimentacaoComponent {
       this.instituicoes = instituicoes_aux;
 
       if (this.filtroInstituicaoId === null && this.instituicoes.length > 0) {
-        this.filtroInstituicaoId = this.instituicoes[0].instituicaoId;
+        this.filtroInstituicaoId = this.instituicoes[0].instituicao_id;
       }
 
       if (gatilhoMudancaInstituicao) {
@@ -171,8 +171,8 @@ export class MovimentacaoComponent {
     }
   }
 
-  async ListarMovimentacoesAsync(instituicaoId: string, periodoId: string): Promise<MovimentacaoResponse[]> {
-    const movimentacoes = await this.movimentacaoService.ListarPorInstituicaoAsync(instituicaoId, periodoId);
+  async ListarMovimentacoesAsync(instituicao_id: string, periodo_id: string): Promise<MovimentacaoResponse[]> {
+    const movimentacoes = await this.movimentacaoService.ListarPorInstituicaoAsync(instituicao_id, periodo_id);
 
     movimentacoes.sort((a, b) => {
       const difData = new Date(a.data).getTime() - new Date(b.data).getTime();
@@ -199,7 +199,7 @@ export class MovimentacaoComponent {
         const aposInicio = selectedDate >= new Date(periodo.inicio);
         const antesFim = selectedDate <= new Date(periodo.fim);
         if (aposInicio && antesFim) {
-          this.movimentacao.periodoId = periodo.periodoId;
+          this.movimentacao.periodo_id = periodo.periodo_id;
         }
       });
     }
@@ -253,8 +253,15 @@ export class MovimentacaoComponent {
     }
   }
 
+  getProximaFatura(instituicao: InstituicaoResponse): number {
+    if (!instituicao.credito) return 0;
+    if (!instituicao.limite_credito) return 0;
+
+    return Math.abs(instituicao.limite_credito) - Math.abs(instituicao.saldo);
+  }
+
   copiarMovimentacoes(id_instituicao: string) {
-    const instituicao = this.instituicoes.find(i => i.instituicaoId === id_instituicao);
+    const instituicao = this.instituicoes.find(i => i.instituicao_id === id_instituicao);
     const movimentacoes = instituicao?.movimentacoes || [];
     const csv = movimentacoes.map(m => {
       const dataFormatada = m.data;
