@@ -22,6 +22,10 @@ branches:
         # Required. The list of status checks to require in order to merge into this branch
         contexts:
           - "Build and Test"
+          - "build"
+          - "CI / Build and Test (pull_request)"
+          - "CI / Build and Test"
+          - "Build and Test"
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
       enforce_admins: true
       # Prevent merge commits from being pushed to matching branches
