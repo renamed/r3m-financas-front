@@ -40,8 +40,8 @@ const mockInstituicoes: InstituicaoResponse[] = [
 ];
 
 const mockMovimentacoes: MovimentacaoResponse[] = [
-  { movimentacaoId: 'm1', valor: 10, data: new Date('2025-01-01'), descricao: 'Teste 1', categoria: mockCategorias[0], instituicao: undefined as any, periodo: mockPeriodos[0] },
-  { movimentacaoId: 'm2', valor: -5, data: new Date('2025-01-02'), descricao: 'Teste 2', categoria: mockCategorias[1], instituicao: undefined as any, periodo: mockPeriodos[1] }
+  { movimentacao_id: 'm1', valor: 10, data: new Date('2025-01-01'), descricao: 'Teste 1', categoria: mockCategorias[0], instituicao: undefined as any, periodo: mockPeriodos[0] },
+  { movimentacao_id: 'm2', valor: -5, data: new Date('2025-01-02'), descricao: 'Teste 2', categoria: mockCategorias[1], instituicao: undefined as any, periodo: mockPeriodos[1] }
 ];
 // Preenche movimentacoes e referencia circular
 mockMovimentacoes.forEach(m => (m.instituicao = mockInstituicoes[0]));
@@ -396,5 +396,57 @@ describe('MovimentacaoComponent', () => {
     await component.copiarMovimentacoes('nao-existe');
     expect(clipboardSpy).toHaveBeenCalledWith('');
     expect(swalSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+  });
+
+  describe('onDeleteMovimentacao', () => {
+    let swalFireSpy: jasmine.Spy;
+    let movimentacaoService: any;
+    let listarInstituicoesAsyncSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      movimentacaoService = TestBed.inject(MovimentacaoService);
+      listarInstituicoesAsyncSpy = spyOn(component, 'ListarInstituicoesAsync').and.returnValue(Promise.resolve());
+      swalFireSpy = spyOn<any>(Swal, 'fire').and.callThrough();
+      spyOn(movimentacaoService, 'DeletarAsync').and.returnValue(Promise.resolve());
+    });
+
+    it('should call DeletarAsync and ListarInstituicoesAsync and show success when confirmed', async () => {
+      // Simula confirmação positiva
+      (Swal.fire as any).and.returnValue(Promise.resolve({ isConfirmed: true }));
+      await component.onDeleteMovimentacao('1');
+      expect(movimentacaoService.DeletarAsync).toHaveBeenCalledWith('1');
+      expect(listarInstituicoesAsyncSpy).toHaveBeenCalledWith(true);
+      expect(swalFireSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+    });
+
+    it('should not call DeletarAsync if not confirmed', async () => {
+      (Swal.fire as any).and.returnValue(Promise.resolve({ isConfirmed: false }));
+      await component.onDeleteMovimentacao('1');
+      expect(movimentacaoService.DeletarAsync).not.toHaveBeenCalled();
+      expect(listarInstituicoesAsyncSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle error in DeletarAsync', async () => {
+      (Swal.fire as any).and.returnValues(
+        Promise.resolve({ isConfirmed: true }),
+        Promise.resolve() // para o segundo Swal.fire
+      );
+      (movimentacaoService.DeletarAsync as any).and.returnValue(Promise.reject({ message: 'erro' }));
+      await component.onDeleteMovimentacao('1');
+      // O erro é "engolido" pelo then, mas podemos garantir que o Swal de sucesso não é chamado
+      expect(swalFireSpy).not.toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+    });
+
+    it('should handle error in ListarInstituicoesAsync after delete', async () => {
+      (Swal.fire as any).and.returnValues(
+        Promise.resolve({ isConfirmed: true }),
+        Promise.resolve() // para o segundo Swal.fire
+      );
+      (movimentacaoService.DeletarAsync as any).and.returnValue(Promise.resolve());
+      listarInstituicoesAsyncSpy.and.returnValue(Promise.reject({ message: 'erro' }));
+      await component.onDeleteMovimentacao('1');
+      // O Swal de sucesso é chamado antes do erro
+      expect(swalFireSpy).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'success' }));
+    });
   });
 });

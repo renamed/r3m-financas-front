@@ -14,7 +14,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRefresh, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-movimentacao',
@@ -23,6 +23,30 @@ import { faRefresh, faCopy } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './movimentacao.component.css'
 })
 export class MovimentacaoComponent {
+  async onDeleteMovimentacao(movimentacaoId: string) {
+
+    Swal.fire({
+      title: 'Deletar movimentação',
+      text: 'Você tem certeza que deseja deletar esta movimentação?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      allowOutsideClick: false
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.movimentacaoService.DeletarAsync(movimentacaoId);
+        const listarPromise = this.ListarInstituicoesAsync(true);
+        Swal.fire({
+          icon: 'success',
+          title: 'Movimentação deletada',
+          text: 'A movimentação foi deletada com sucesso.',
+          allowOutsideClick: false
+        });
+        await listarPromise;
+      }
+    });
+  }
   async onFiltroInstituicaoChange() {
     await this.OnListarMovimentacoesFiltroChangeAsync();
   }
@@ -33,7 +57,7 @@ export class MovimentacaoComponent {
 
   private async OnListarMovimentacoesFiltroChangeAsync() {
     if (this.filtroInstituicaoId && this.filtroPeriodoId) {
-            await this.ListarInstituicoesAsync(false);
+      await this.ListarInstituicoesAsync(false);
 
       this.instituicao = this.instituicoes.find(i => i.instituicao_id === this.filtroInstituicaoId) || {
         instituicao_id: '',
@@ -67,6 +91,7 @@ export class MovimentacaoComponent {
 
   faRefresh = faRefresh;
   faCopy = faCopy;
+  faTrash = faTrash;
 
   periodoSelecionado: PeriodoResponse | null = null;
   categoriaSelecionada: CategoryResponse | null = null;

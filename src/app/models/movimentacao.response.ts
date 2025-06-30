@@ -3,7 +3,7 @@ import InstituicaoResponse from "./instituicao.response";
 import PeriodoResponse from "./periodo.response";
 
 export default interface MovimentacaoResponse {
-    movimentacaoId: string;
+    movimentacao_id: string;
     data: Date;
     descricao: string;
     valor: number;    

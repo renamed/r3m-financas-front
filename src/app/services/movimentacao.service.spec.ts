@@ -75,6 +75,27 @@ describe('MovimentacaoService', () => {
     expect(spy).toHaveBeenCalledWith('http://localhost:7050/api/movimentacao/1/1');
   });
 
+  it('should delete movimentacao (DeletarAsync)', async () => {
+    spyOn(window, 'fetch').and.resolveTo({ ok: true } as Response);
+    await expectAsync(service.DeletarAsync('1')).toBeResolved();
+  });
+
+  it('should throw error if DeletarAsync fails', async () => {
+    spyOn(window, 'fetch').and.resolveTo({ ok: false } as Response);
+    await expectAsync(service.DeletarAsync('1')).toBeRejectedWithError('Erro ao deletar movimentação');
+  });
+
+  it('should call fetch with correct URL and method for DeletarAsync', async () => {
+    const spy = spyOn(window, 'fetch').and.resolveTo({ ok: true } as Response);
+    await service.DeletarAsync('1');
+    expect(spy).toHaveBeenCalledWith(
+      'http://localhost:7050/api/movimentacao/1',
+      jasmine.objectContaining({
+        method: 'DELETE'
+      })
+    );
+  });
+
   it('should throw if fetch throws (network error) in ListarPorInstituicaoAsync', async () => {
     spyOn(window, 'fetch').and.callFake(() => { throw new Error('Network'); });
     await expectAsync(service.ListarPorInstituicaoAsync('1', '1')).toBeRejectedWithError('Network');
@@ -83,5 +104,10 @@ describe('MovimentacaoService', () => {
   it('should throw if fetch throws (network error) in AdicionarAsync', async () => {
     spyOn(window, 'fetch').and.callFake(() => { throw new Error('Network'); });
     await expectAsync(service.AdicionarAsync(mockRequest)).toBeRejectedWithError('Network');
+  });
+
+  it('should throw if fetch throws (network error) in DeletarAsync', async () => {
+    spyOn(window, 'fetch').and.callFake(() => { throw new Error('Network'); });
+    await expectAsync(service.DeletarAsync('1')).toBeRejectedWithError('Network');
   });
 });
