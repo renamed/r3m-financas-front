@@ -29,4 +29,14 @@ export class MovimentacaoService {
       throw new Error('Erro ao adicionar movimentação');
     }
   }
+
+  async DeletarAsync(movimentacaoId: string) {
+    const response = await fetch(`${this.BASE_URL}/${movimentacaoId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar movimentação');
+    }
+  }
 }

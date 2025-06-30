@@ -8,6 +8,8 @@ This project is a personal financial management system that allows users to cont
 
 - **Add New Transaction**: Add a new financial transaction by entering the date, description, amount, category, institution, and corresponding period. The value can be entered simply, and the system automatically formats it.
 
+- **Delete Transaction**: Remove a financial transaction from the system. The user is prompted for confirmation before deletion, and the list of transactions and balances is updated automatically after a successful delete.
+
 - **Institution Management**: View and select different bank institutions, see the updated balance of each, and their associated transactions.
 
 - **Category Management**: Transactions can be categorized (e.g., food, transport, etc.), making it easier to control and analyze expenses and income. The system allows listing, searching, and filtering categories.
@@ -20,7 +22,7 @@ This project is a personal financial management system that allows users to cont
 
 - **Intuitive Interface**: The interface is divided into two main areas: one for listing and filtering transactions and another for adding new transactions, making usage simple and straightforward.
 
-- **Error and Success Messages**: The system displays clear messages to the user in case of success or failure in operations, such as when adding a transaction or loading lists.
+- **Error and Success Messages**: The system displays clear messages to the user in case of success or failure in operations, such as when adding, deleting, or loading transactions and lists.
 
 - **Smart Sorting**: Transactions are displayed sorted by date, value, and description, making it easier to view the most relevant entries.
 
@@ -42,5 +44,6 @@ These processes ensure the system is always tested, versioned, and ready to be u
 
 1. **List Transactions**: Select the desired institution and period to view the transactions and corresponding balance.
 2. **Add Transaction**: Fill in the form with the transaction data and click "Add Transaction".
-3. **Update Lists**: Use the update buttons next to the selection fields to ensure the lists are up to date.
-4. **Copy Transactions**: Click the copy icon to copy the transactions from the selected institution.
+3. **Delete Transaction**: Click the delete icon next to a transaction, confirm the action, and the transaction will be removed from the list and the balance will be updated.
+4. **Update Lists**: Use the update buttons next to the selection fields to ensure the lists are up to date.
+5. **Copy Transactions**: Click the copy icon to copy the transactions from the selected institution.
