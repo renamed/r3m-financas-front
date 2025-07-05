@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import InstituicaoResponse from '../models/instituicao.response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InstituicoesService {
-    private readonly BASE_URL = 'http://localhost:7050/api/instituicao';
+    private readonly BASE_URL = environment.instituicaoApiUrl;
     constructor() { }
 
     async ListarAsync(): Promise<InstituicaoResponse[]> {
