@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import MovimentacaoResponse from '../models/movimentacao.response';
 import { MovimentacaoRequest } from '../models/movimentacao.request';
 
@@ -8,7 +7,7 @@ import { MovimentacaoRequest } from '../models/movimentacao.request';
 })
 export class MovimentacaoService {
 
-  private readonly BASE_URL = environment.movimentacaoApiUrl;
+  private readonly BASE_URL = 'http://localhost:7050/api/movimentacao';
   constructor() { }
 
   async ListarPorInstituicaoAsync(instituicao_id: string, periodo_id: string): Promise<MovimentacaoResponse[]> {

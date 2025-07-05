@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import PeriodoResponse from '../models/periodo.response';
 
 @Injectable({
@@ -7,7 +6,7 @@ import PeriodoResponse from '../models/periodo.response';
 })
 export class PeriodosService {
 
-  private readonly BASE_URL = environment.periodoApiUrl;
+  private readonly BASE_URL = 'http://localhost:7050/api/periodo';
   constructor() { }
 
   async ListarAsync(anoBase: Number): Promise<PeriodoResponse[]> {
