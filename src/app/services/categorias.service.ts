@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import CategoryResponse from '../models/categoria.response';
 
 @Injectable({
@@ -6,7 +7,7 @@ import CategoryResponse from '../models/categoria.response';
 })
 export class CategoriasService {
 
-  private readonly BASE_URL = 'http://localhost:7050/api/Categoria';
+  private readonly BASE_URL = environment.categoriaApiUrl;
   constructor() { }
 
   async ListarAsync(): Promise<CategoryResponse[]> {
