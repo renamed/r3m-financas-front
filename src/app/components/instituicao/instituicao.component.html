@@ -1,0 +1,81 @@
+<h1>Instituições</h1>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-7">
+            <h2>Listar Instituições</h2>
+            <div class="row">
+                @if (instituicoes.length === 0) {
+                <i>Nenhuma instituição cadastrada</i>
+                } @else {
+                <div id="instituicoes-list">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Saldo</th>
+                                <th>Crédito?</th>
+                                <th>Limite de Crédito</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (instituicao of instituicoes; track $index) {
+                            <tr>
+                                <td>
+                                    {{ instituicao.nome }}
+                                </td>
+                                <td>
+                                    {{ instituicao.saldo | currency:'BRL' }}
+                                </td>
+                                <td>
+                                    {{ instituicao.credito ? 'Sim' : 'Não' }}
+                                </td>
+                                <td>
+                                    {{ instituicao.limite_credito | currency:'BRL' }}
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="col-5">
+            <h2>Cadastrar Instituição</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" maxlength="25" class="form-control" id="nome" name="nome" [(ngModel)]="novaInstituicao.nome" required>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="data_saldo_inicial">Data do Saldo Inicial</label>
+                        <input type="date" class="form-control" id="data_saldo_inicial" name="data_saldo_inicial" 
+                            [(ngModel)]="novaInstituicao.data_saldo_inicial" required>                        
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="credito" id="credito" [(ngModel)]="novaInstituicao.instituicao_credito">
+                        <label class="form-check-label" for="credito">
+                            Instituição de Crédito
+                        </label>
+                    </div>
+                    <div class="form-group" *ngIf="novaInstituicao.instituicao_credito">
+                        <label for="limite_credito">Limite de Crédito</label>
+                        <input type="text" class="form-control" id="limite_credito" name="limite_credito" 
+                            [ngModel]="novaInstituicao.limite_credito | currency:'BRL':'symbol':'1.2-2'"
+                            (input)="onValorInput($event, 'limite_credito')">
+                    </div>
+                    <div class="form-group" *ngIf="!novaInstituicao.instituicao_credito">
+                        <label for="saldo_inicial">Saldo Inicial</label>
+                        <input type="text" class="form-control" id="saldo_inicial" name="saldo_inicial" 
+                            [ngModel]="novaInstituicao.saldo_inicial | currency:'BRL':'symbol':'1.2-2'"
+                            (input)="onValorInput($event, 'saldo_inicial')" required>                        
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" (click)="CadastrarInstituicao()">Cadastrar</button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
