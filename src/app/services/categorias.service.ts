@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import CategoryResponse from '../models/categoria.response';
+import CategoriaRequest from '../models/categoria.request';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,24 @@ export class CategoriasService {
     if (!response.ok) throw new Error('Erro ao pesquisar categorias');
     return response.json();
   }
+
+  async CriarAsync(categoria: CategoriaRequest) {
+    const response = await fetch(this.BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoria)
+    });
+    
+    if (!response.ok) throw new Error(await response.text());
+  }
+
+  async DeleteAsync(categoriaId: string) {
+    const response = await fetch(`${this.BASE_URL}/${categoriaId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) throw new Error(await response.text());    
+  }
 }
-
-
-
-
