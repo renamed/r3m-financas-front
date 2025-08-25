@@ -3,7 +3,7 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col-7">
+    <div class="col-8">
       <h2>Listar Movimentações</h2>
       <div class="row">
         <div class="row">
@@ -49,11 +49,12 @@
             <fa-icon style="cursor: pointer;" [icon]="faCopy"
               (click)="copiarMovimentacoes(instituicao.instituicao_id)"></fa-icon>
 
-            @for (movimentacao of instituicao.movimentacoes; track $index) {              
+            @for (movimentacao of instituicao.movimentacoes; track $index) {
             <div class="row" [ngClass]="$index % 2 === 0 ? 'bg-light' : ''">
-              <div class="col-3">{{ movimentacao.data | date:'shortDate' }}</div>
-              <div class="col-5">{{ movimentacao.descricao }} </div>
-              <div class="col-3">{{ movimentacao.valor | currency: 'BRL' }} </div>
+              <div class="col-1">{{ movimentacao.data | date:'shortDate' }}</div>
+              <div class="col-4">{{ movimentacao.descricao }} </div>
+              <div class="col-4">{{ movimentacao.categoria.nome }} </div>
+              <div class="col-2">{{ movimentacao.valor | currency: 'BRL' }} </div>
               <div class="col-1">
                 <fa-icon [icon]="faTrash" style="cursor: pointer;" (click)="onDeleteMovimentacao(movimentacao.movimentacao_id)"></fa-icon>
               </div>
@@ -66,7 +67,7 @@
         }
       </div>
     </div>
-    <div class="col-5">
+    <div class="col-4">
       <h2>Nova movimentação</h2>
       <form>
         <div class="form-group">
