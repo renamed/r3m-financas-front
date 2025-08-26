@@ -94,9 +94,16 @@
         <div class="form-group">
           <label for="categoria">Categoria</label>
           <div class="d-flex align-items-center gap-2">
-            <select id="categoria" class="form-control" name="categoria" [(ngModel)]="movimentacao.categoria_id">
-              <option *ngFor="let categoria of categorias" [value]="categoria.categoria_id">{{ categoria.nome }}</option>
-            </select>
+            <ng-select class="form-control"
+              name="categoria"
+              id="categoria"
+              [items]="categorias"
+              bindLabel="nome"
+              bindValue="categoria_id"              
+              [(ngModel)]="movimentacao.categoria_id"
+              [searchable]="true"
+              [clearable]="true">
+            </ng-select>
             <button type="button" class="btn btn-secondary ms-2" (click)="ListarCategorias()">
               <fa-icon [icon]="faRefresh"></fa-icon>
             </button>

@@ -1,0 +1,53 @@
+/* =======================
+   Estilo do ng-select
+======================= */
+
+/* Input principal */
+::ng-deep ng-select {
+  display: block;
+  width: 100%;
+  border: 1px solid #ced4da; /* borda igual ao Bootstrap */
+  border-radius: 0.25rem;
+  background-color: #fff; /* fundo branco */
+  padding: 0.375rem 0.75rem; /* mesmo padding do form-control */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Efeito de foco */
+::ng-deep ng-select.ng-select-focused {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+/* Dropdown das opções */
+::ng-deep ng-select .ng-dropdown-panel {
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  z-index: 1000;
+}
+
+/* Cada opção */
+::ng-deep ng-select .ng-option {
+  padding: 0.375rem 0.75rem;
+  color: #212529;
+}
+
+/* Hover das opções */
+::ng-deep ng-select .ng-option:hover,
+::ng-deep ng-select .ng-option.ng-option-selected {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+/* Placeholder */
+::ng-deep ng-select .ng-placeholder {
+  color: #6c757d;
+}
+
+/* Limpar botão */
+::ng-deep ng-select .ng-clear-wrapper {
+  color: #6c757d;
+}
