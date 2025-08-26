@@ -12,13 +12,14 @@ import { MovimentacaoService } from '../../services/movimentacao.service';
 import { MovimentacaoRequest } from '../../models/movimentacao.request';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRefresh, faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-movimentacao',
-  imports: [CommonModule, FormsModule, SweetAlert2Module, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, SweetAlert2Module, FontAwesomeModule, NgSelectModule],
   templateUrl: './movimentacao.component.html',
   styleUrl: './movimentacao.component.css'
 })
