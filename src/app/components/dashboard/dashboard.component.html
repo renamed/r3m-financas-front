@@ -1,0 +1,54 @@
+<h1>Dashboard</h1>
+<div class="container">
+
+    <div class="row">
+        <div class="col-2">
+            <label for="periodos">Periodos:</label>
+        </div>
+        <div class="col-10">
+            <ng-select class="form-control" name="periodos" id="periodos" [items]="periodos" bindLabel="nome" [(ngModel)]="periodo_id"
+                bindValue="periodo_id" [searchable]="true" [clearable]="true" (change)="onPeriodosChange()">
+            </ng-select>
+        </div>
+    </div>
+
+    @if(this.historico_ids.length >= 1) {
+        <div class="row">
+            <div class="col-5">            
+                <button (click)="retroceder()">Voltar</button>
+            </div>
+        </div>
+    }
+
+    <div class="row">        
+        @if(!ehMovimentacao && categoriasSoma.length)
+        {
+            
+            <ul>
+            @for (item of categoriasSoma; track $index) {
+                <li>
+                    
+                    <button (click)="onMais(item.categoria.categoria_id)" >+</button> {{ item.categoria.nome }} {{ item.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                </li>
+            }
+            </ul>
+        } @else if(ehMovimentacao && movimentacoes.length) {                        
+            <table>
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                </tr>
+            @for (item of movimentacoes; track $index) {
+                <tr>
+                    
+                    <td>{{ item.data | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ item.descricao }}</td>
+                    <td>{{ item.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
+
+                </tr>
+            }
+            </table>
+        }
+    </div>
+</div>
