@@ -20,9 +20,13 @@
         </div>
     }
 
-    <div class="row">        
+    <div class="row">                
         @if(!ehMovimentacao && categoriasSoma.length)
         {
+            <div>
+                <b>Total de Categorias</b>: {{ categoriasSoma.length }}.
+                <br/><b>Valor médio</b>: {{ valorMedioCategoriasSoma.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+            </div>
             
             <ul>
             @for (item of categoriasSoma; track $index) {
@@ -32,7 +36,11 @@
                 </li>
             }
             </ul>
-        } @else if(ehMovimentacao && movimentacoes.length) {                        
+        } @else if(ehMovimentacao && movimentacoes.length) {      
+            <div>
+            <b>Total de Movimentações</b>: {{ movimentacoes.length }}.
+            <br/><b>Valor médio</b>: {{ valorMedioMovimentacoes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+            </div>
             <table>
                 <tr>
                     <th>Data</th>
@@ -49,6 +57,7 @@
                 </tr>
             }
             </table>
+            
         }
     </div>
 </div>
