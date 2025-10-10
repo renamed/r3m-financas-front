@@ -67,4 +67,16 @@ export class DashboardComponent {
     this.jaRetrocedeu = true;
     await this.onMais(ultimoId);
   }
+
+  get valorMedioMovimentacoes() : number {
+    if (!this.movimentacoes || !this.movimentacoes.length) return 0;
+    const soma = this.movimentacoes.reduce((soma, mov) => soma + mov.valor, 0);
+    return soma / this.movimentacoes.length;
+  }
+
+  get valorMedioCategoriasSoma(): number {
+    if (!this.categoriasSoma || !this.categoriasSoma.length) return 0;
+    const soma = this.categoriasSoma.reduce((soma, cat) => soma + cat.valor, 0);
+    return soma / this.categoriasSoma.length;
+  }
 }
